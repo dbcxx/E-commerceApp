@@ -27,6 +27,20 @@ namespace E_commerceApp.Areas.Admin.Controllers
             return View(_db.Products.Include(a=>a.ProductTypes).Include(a=>a.ProductTags).ToList());
         }
 
+        //post
+        [HttpPost]
+        public  IActionResult Index(decimal? lowAmount, decimal? largeAmount)
+        {
+            var products = _db.Products.Include(c => c.ProductTypes).Include(c => c.ProductTags)
+                .Where(c => c.Price >= lowAmount && c.Price <= largeAmount).ToList();
+            if(lowAmount==null || largeAmount == null)
+            {
+                products = _db.Products.Include(c => c.ProductTypes).Include(c => c.ProductTags).ToList();
+            }
+
+            return View(products);
+        }
+
         //get
         public IActionResult Create()
         {
@@ -37,6 +51,7 @@ namespace E_commerceApp.Areas.Admin.Controllers
 
         //post 
         [HttpPost]
+        
         public async Task<IActionResult> Create(Products product, IFormFile image)
         {
             if (ModelState.IsValid)
@@ -53,7 +68,7 @@ namespace E_commerceApp.Areas.Admin.Controllers
                 {
                     var name = Path.Combine(_host.WebRootPath + "/images", Path.GetFileName(image.FileName));
                     await image.CopyToAsync(new FileStream(name, FileMode.Create));
-                    product.Image = "/images" + image.FileName;
+                    product.Image = "images/" + image.FileName;
                 }
                 if (image == null)
                 {
@@ -86,7 +101,7 @@ namespace E_commerceApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View();
+            return View(product);
         }
 
         //post
@@ -111,6 +126,63 @@ namespace E_commerceApp.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(products);
+        }
+
+        //get
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var product = _db.Products
+                .Include(b => b.ProductTypes)
+                .Include(b=>b.ProductTags)
+                .FirstOrDefault(b=>b.ID==id);
+            if(product == null)
+            {
+                return NotFound();
+            }
+            return View(product);
+        }
+
+        //get 
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var product = _db.Products
+                .Include(b=>b.ProductTypes)
+                .Include(b=>b.ProductTags)
+                .Where(b=>b.ID==id)
+                .FirstOrDefault();
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return View(product);
+        }
+
+        //post action method 
+        [HttpPost]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirm(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = _db.Products.FirstOrDefault(c => c.ID == id);
+            if(product == null)
+            {
+                return NotFound();
+            }
+            _db.Products.Remove(product);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
