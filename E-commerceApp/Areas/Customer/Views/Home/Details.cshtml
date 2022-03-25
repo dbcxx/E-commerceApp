@@ -3,7 +3,7 @@
     ViewData["Title"] = "Details";
 
 }
-@*@using E_commerceApp.Utility
+@using E_commerceApp.Utility
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 @{
@@ -12,14 +12,14 @@
     Products product = null;
     if (products != null)
     {
-        product = products.FirstOrDefault(c => c.ID == Model.Id);
+        product = products.FirstOrDefault(c => c.ID == Model.ID);
     }
 
-}*@
+}
 <br />
 
 <h2 class="text-info">Product Details</h2>
-<form asp-action="Detail" method="post" enctype="multipart/form-data">
+<form asp-action="Details" method="post" enctype="multipart/form-data">
     <div class="p-4 rounded border row">
         <div asp-validation-summary="ModelOnly" class="text-danger">
 

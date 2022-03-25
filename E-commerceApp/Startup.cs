@@ -35,6 +35,15 @@ namespace E_commerceApp
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            services.AddSession(option =>
+            {
+                //set a short timeout for easy testing.
+                option.IdleTimeout = TimeSpan.FromMinutes(30);
+                //option.Cookie.HttpOnly = true;
+                //make the session cookies essential 
+                option.Cookie.IsEssential = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,7 +62,7 @@ namespace E_commerceApp
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
 
             app.UseAuthentication();
