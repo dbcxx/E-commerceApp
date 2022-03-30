@@ -3,10 +3,12 @@ using E_commerceApp.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using E_commerceApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace E_commerceApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles ="Super User")]
     public class ProductTypesController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -14,6 +16,7 @@ namespace E_commerceApp.Areas.Admin.Controllers
         {
             _db=db;
         }
+        [AllowAnonymous]
         public IActionResult Index()
         {
             //var data = _db.productTypes.ToList();
